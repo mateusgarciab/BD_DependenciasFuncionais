@@ -1,13 +1,17 @@
 CC = gcc
+CFLAGS = -std=c11 -Wall -Wextra
+LDFLAGS = -lm
 
-all: leArquivo
 objects = #objetos
 
+all: leArquivo
+
 leArquivo: leArquivo.c 
-	$(CC) leArquivo.c -o leArquivo 
+	$(CC) leArquivo.c $(CFLAGS) -o leArquivo 
+
 
 clean:
 	rm -f $(objects) 
 	
 purge: clean 
-	rm -f #principal
+	rm -f leArquivo #Trocar para main no futuro
