@@ -14,22 +14,48 @@ FILE *devolveArquivo(char *nome) {
 }
 
 char *devolveAtributos(FILE *arq) {
-    char *atributos = malloc(sizeof(char) * 27); // 0 para o numero de atributos e outras 26 para caber o alfabeto inteiro
+    char *atributos = malloc(sizeof(char) * 26);
+    int i = 0;
+    char c; 
 
-    //Fazer laço pegando cada atributo e colocando no vetor
-    //E colocar o tamanho no atributos[0]
+    c = fgetc(arq); // ignorando o primeiro U
+    while ((c = fgetc(arq)) != '\n') {
+        if ((c != ',') && (c != ' ') && (c != '{') && (c != '=') && (c != '}') && (c != ';'))
+            atributos[i++] = c;
+    }
 
     return atributos;
 }
 
+char *devolveDependencias(FILE *arq) {
+    char *dependencias = malloc (sizeof (char) * 100);
+    int i = 0;
+    char c;
+
+    c = fgetc(arq); // ignorando o primeiro F
+    while ((c = fgetc(arq)) != EOF) {
+        if ((c != ' ') && (c != '{') && (c != '=') && (c != '}')) {
+            if (c == ';')
+                dependencias[i++] = ',';
+            else
+                dependencias[i++] = c;
+        }
+    }
+    return dependencias;
+}
+
 /* Só para testar */
 int main() {
-    
     FILE *arq = devolveArquivo("./exemplos/1.fds"); 
-    char *atributos = devolveArquivo(arq);
+    char *atributos, *dependencias;
 
-    free(atributos);
-    fclose(arq);
     printf("Arquivo aberto\n");
+    atributos = devolveAtributos(arq);
+    printf("Atributos lidos: %s\n", atributos);
+    dependencias = devolveDependencias(arq);
+    printf("Dependencias lidas: %s\n", dependencias);
+
+    fclose(arq);
+    free(atributos);
     return 0;
 }
