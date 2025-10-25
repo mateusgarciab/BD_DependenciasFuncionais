@@ -34,7 +34,7 @@ char *devolveDependencias(FILE *arq) {
 
     c = fgetc(arq); // ignorando o primeiro F
     while ((c = fgetc(arq)) != EOF) {
-        if ((c != ' ') && (c != '{') && (c != '=') && (c != '}')) {
+        if ((c != ' ') && (c != '{') && (c != '=') && (c != '}') && (c != '\n')) {
             if (c == ';')
                 dependencias[i++] = ',';
             else
@@ -57,5 +57,6 @@ int main() {
 
     fclose(arq);
     free(atributos);
+    free(dependencias);
     return 0;
 }
