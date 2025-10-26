@@ -45,7 +45,8 @@ char *devolveDependencias(FILE *arq) {
 }
 
 /* Só para testar */
-int main() {
+/* int main() {
+    printf("main do leaaaarquivo");
     FILE *arq = devolveArquivo("./exemplos/1.fds"); 
     char *atributos, *dependencias;
 
@@ -59,4 +60,4 @@ int main() {
     free(atributos);
     free(dependencias);
     return 0;
-}
+} */

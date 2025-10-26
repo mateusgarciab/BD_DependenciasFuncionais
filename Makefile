@@ -2,16 +2,18 @@ CC = gcc
 CFLAGS = -std=c11 -Wall -Wextra
 LDFLAGS = -lm
 
-objects = #objetos
+objects = leArquivo.o
 
-all: leArquivo
+all: fdtool
 
-leArquivo: leArquivo.c 
-	$(CC) leArquivo.c $(CFLAGS) -o leArquivo 
+fdtool: fdtool.c leArquivo.o
+	$(CC) fdtool.c -o fdtool leArquivo.o $(CFLAGS) $(LDFLAGS)
 
+leArquivo.o: leArquivo.c 
+	$(CC) -c leArquivo.c $(CFLAGS)
 
 clean:
 	rm -f $(objects) 
 	
 purge: clean 
-	rm -f leArquivo #Trocar para main no futuro
+	rm -f fdtool
