@@ -6,7 +6,7 @@ objects = leArquivo.o operacoes.o
 
 all: fdtool
 
-fdtool: fdtool.c leArquivo.o
+fdtool: fdtool.c $(objects)
 	$(CC) fdtool.c -o fdtool $(objects) $(CFLAGS) $(LDFLAGS)
 
 leArquivo.o: leArquivo.c 

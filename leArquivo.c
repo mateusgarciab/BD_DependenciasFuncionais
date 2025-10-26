@@ -27,7 +27,7 @@ char *devolveAtributos(FILE *arq) {
     return atributos;
 }
 
-char *devolveDependencias(FILE *arq) {
+char *devolveStringDependencias(FILE *arq) {
     char *dependencias = malloc (sizeof (char) * 100);
     int i = 0;
     char c;

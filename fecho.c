@@ -48,6 +48,14 @@ char *devolveDependencias(FILE *arq) {
     return dependencias;
 }
 
+
+
+
+
+
+
+
+
 char *calculaFecho(struct Dependencia *DF, int qtd, char *X){
     char *fecho = malloc(sizeof(char) * 26);
     int tamanhoFecho = 0;
