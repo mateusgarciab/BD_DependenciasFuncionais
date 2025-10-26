@@ -48,8 +48,8 @@ char *devolveDependencias(FILE *arq) {
     return dependencias;
 }
 
-void calculaFecho(struct Dependencia *DF, int qtd, char *X){
-    char fecho[26];
+char *calculaFecho(struct Dependencia *DF, int qtd, char *X){
+    char *fecho = malloc(sizeof(char) * 26);
     int tamanhoFecho = 0;
 
     int i = 0;
@@ -100,8 +100,7 @@ void calculaFecho(struct Dependencia *DF, int qtd, char *X){
     }while(mudou);
     fecho[tamanhoFecho] = '\0';
 
-    //imprime fecho
-    printf("%s\n", fecho);
+    return fecho;
 }
 
 void calcularCoberturaMinima(struct Dependencia *DF, int qtd){
@@ -118,9 +117,83 @@ void calcularCoberturaMinima(struct Dependencia *DF, int qtd){
             qtd_unitario++;
         }
     }
+    printf("Cobertura mínima - Etapa 1 (lado direito unitário):\n");
+    for(int i = 0; i < qtd_unitario; i++){
+        printf("%s -> %s\n", DF_unitario[i].esquerda, DF_unitario[i].direita);
+    }
 
     //Etapa 2: Remover atributos estranhos do lado esquerdo
-    
+    for(int i = 0; i < qtd_unitario; i++){
+        for(int j = 0; DF_unitario[i].esquerda[j] != '\0'; j++){
+            char temp[26];
+            int k = 0;
+            //cria uma cópia do lado esquerdo sem o atributo j
+            for(int l = 0; DF_unitario[i].esquerda[l] != '\0'; l++){
+                if(l != j){
+                    temp[k++] = DF_unitario[i].esquerda[l];
+                }
+            }
+            temp[k] = '\0';
+
+            char *fecho = calculaFecho(DF_unitario, qtd_unitario, temp);
+            
+            //verifica se o atributo da direita ainda pode ser derivado
+            int podeDerivar = 0;
+            for(int l = 0; fecho[l] != '\0'; l++){
+                if(fecho[l] == DF_unitario[i].direita[0]){
+                    podeDerivar = 1;
+                    break;
+                }
+            }
+            free(fecho);
+
+            //se pode derivar, atualiza o lado esquerdo
+            if(podeDerivar){
+                strcpy(DF_unitario[i].esquerda, temp);
+                j--; //ajusta o índice após a remoção
+            }
+        }
+    }
+    printf("Cobertura mínima - Etapa 2 (remover atributos estranhos do lado esquerdo):\n");
+    for(int i = 0; i < qtd_unitario; i++){
+        printf("%s -> %s\n", DF_unitario[i].esquerda, DF_unitario[i].direita);
+    }
+
+    //Etapa 3: Remover dependências funcionais redundantes
+    struct Dependencia *DF_minimo = malloc(sizeof(struct Dependencia) * qtd_unitario);
+    int qtd_minimo = 0;
+    for(int i = 0; i < qtd_unitario; i++){
+        //cria uma cópia das dependências sem a i-ésima
+        struct Dependencia *DF_temp = malloc(sizeof(struct Dependencia) * (qtd_unitario - 1));
+        int k = 0;
+        for(int j = 0; j < qtd_unitario; j++){
+            if(j != i){
+                DF_temp[k++] = DF_unitario[j];
+            }
+        }
+
+        char *fecho = calculaFecho(DF_temp, qtd_unitario - 1, DF_unitario[i].esquerda);
+
+        //verifica se o atributo da direita ainda pode ser derivado
+        int podeDerivar = 0;
+        for(int l = 0; fecho[l] != '\0'; l++){
+            if(fecho[l] == DF_unitario[i].direita[0]){
+                podeDerivar = 1;
+                break;
+            }
+        }
+        free(fecho);
+        free(DF_temp);
+
+        //se não pode derivar, mantém a dependência funcional
+        if(!podeDerivar){
+            DF_minimo[qtd_minimo++] = DF_unitario[i];
+        }
+    }
+    printf("Cobertura mínima - Etapa 3 (remover dependências redundantes):\n");
+    for(int i = 0; i < qtd_minimo; i++){
+        printf("%s -> %s\n", DF_minimo[i].esquerda, DF_minimo[i].direita);
+    }
 }
 
 int main(){
@@ -165,7 +238,8 @@ int main(){
     printf("Digite o conjunto de atributos X para calcular o fecho: ");
     scanf("%s", X);
 
-    calculaFecho(DF, qtd, X);
+    char *fecho = calculaFecho(DF, qtd, X);
+    printf("Fecho de %s: %s\n", X, fecho);
 
     calcularCoberturaMinima(DF, qtd);
 
