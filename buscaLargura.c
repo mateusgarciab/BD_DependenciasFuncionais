@@ -2,11 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct lista {
-    int inicio;
-    int qnt;
-    char **atributos;
-};
+#include "Headers/buscaLargura.h"
+#include "Headers/operacoes.h"
+
 
 struct lista* criaLista(char *atr) {
     struct lista *l = malloc(sizeof(struct lista));
@@ -31,16 +29,16 @@ int comparaAtributos(const void *a, const void *b) {
 void insereLista(struct lista *l, char *atr) {
     printf("Inserindo %s na lista\n", atr);
     qsort(atr, strlen(atr), sizeof(char), comparaAtributos);
-    for (int i = l->inicio; i < l->qnt; i++) {
+    for (int i = l->inicio; i < l->qnt + l->inicio; i++) {
         if (strcmp(l->atributos[i], atr) == 0)
             return;
     }
 
-    l->atributos[l->qnt] = malloc(sizeof(char) * (strlen(atr) + 1));
-    strcpy(l->atributos[l->qnt], atr);
-    
+    l->atributos[l->inicio + l->qnt] = malloc(sizeof(char) * (strlen(atr) + 1));
+    strcpy(l->atributos[l->inicio + l->qnt], atr);
     
     l->qnt++;
+    printf("Inserido de vdd %s %d\n", l->atributos[l->inicio + l->qnt - 1], l->qnt);
 }
 
 unsigned char listaVazia(struct lista *l) {
@@ -68,12 +66,85 @@ void liberaLista(struct lista *l) {
     free(l);
 }
 
-
-void buscaLargura() {
-
+void imprimeLista(struct lista *l) { /* Para depuração, apagar depois */
+    printf("Lista:\n");
+    for (int i = l->inicio; i < l->qnt + l->inicio; i++) {
+        printf("%s ", l->atributos[i]);
+    }
+    printf("%d itens na lista.", l->qnt);
+    printf("\n");
 }
 
-int main() {
+int ehChave(struct listaDependencias *lista, char *item, char *atr) {
+    char *fecho = calculaFecho(lista, item);
+    qsort(fecho, strlen(fecho), sizeof(char), comparaAtributos);
+    printf("Fecho de %s: %s\n", item, fecho);
+
+    int ehChave = strcmp(fecho, atr);
+    free(fecho);
+    if (ehChave == 0)
+        return 1;
+    else
+        return 0;
+}
+
+int fazParteChave(char letra, char *item) {
+    for (int i = 0; item[i] != '\0'; i++) {
+        if (item[i] == letra)
+            return 1;
+    }
+    return 0;
+}
+
+void buscaLargura(struct listaDependencias *lista, char* atr) {
+    /* pegar os que não estão do lado direito */
+    char **chaves = malloc(sizeof(char*) * 100);
+    int qtdChaves = 0, chaveAchada = 0, tamChave = 0;
+    char *aux = malloc(sizeof(char) * 100);
+
+    struct lista *l = criaLista(atr);
+    while (!listaVazia(l)) {
+        char *item = devolveItemLista(l);
+        printf("Item removido: %s, %d\n", item, l->qnt);
+        if (chaveAchada) {
+            if ((int)strlen(item) > tamChave) {
+                l->qnt = 0;
+                continue;
+            }
+        }
+        
+        if (ehChave(lista, item, atr)) {
+            printf("=========== Chave encontrada: %s\n", item);
+            chaves[qtdChaves] = item;
+            qtdChaves++;
+            chaveAchada = 1;
+            tamChave = strlen(item);
+        }
+
+
+
+        for (int i = 0; i < (int)strlen(atr); i++) {
+            if ((!fazParteChave(atr[i], item)) && (!chaveAchada)) {
+                strcpy(aux, item);
+                strncat(aux, &atr[i], strlen(aux) + 1);
+                aux[strlen(item) + 1] = '\0';
+                puts(aux);
+                insereLista(l, aux);
+            }
+        }
+        imprimeLista(l);
+    }
+
+    free(aux);
+    liberaLista(l); 
+
+    printf("Chaves encontradas:\n");
+    for (int i = 0; i < qtdChaves; i++) {
+        printf("%s\n", chaves[i]);
+    }
+}
+
+/* int main() {
     char atributos[] = "ABCDEF";
     struct lista *l = criaLista(atributos);
 
@@ -88,13 +159,13 @@ int main() {
     letra[0] = 'A';
     letra[1] = 'B';
     insereLista(l, letra);
-    /* insereLista(l, "CDE");
+    insereLista(l, "CDE");
     insereLista(l, "CBD");
     insereLista(l, "CDAFEB");
     insereLista(l, "A");
     insereLista(l, "F");
     insereLista(l, "EF");
-    insereLista(l, "BA"); */
+    insereLista(l, "BA");
 
     printf("%d %d\n", l->inicio, l->qnt);
     printf("Atributos na lista:\n");
@@ -109,6 +180,8 @@ int main() {
     }
 
 
+
+
     liberaLista(l);
     return 0;
-}
+} */

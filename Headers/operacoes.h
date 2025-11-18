@@ -13,7 +13,8 @@ struct Dependencia{
 
 struct listaDependencias* devolveDependencia(char* dependencias);
 
-void calculaFecho(struct listaDependencias *lista, char *X);
+char *calculaFecho(struct listaDependencias *lista, char *X);
 
+void calcularCoberturaMinima(struct Dependencia *DF, int qtd);
 
 #endif

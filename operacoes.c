@@ -193,8 +193,8 @@ void calcularCoberturaMinima(struct Dependencia *DF, int qtd){
     }
 }
 
-void calcularChavesMinimas(struct listaDependencias *lista, char *U){
+/* void calcularChavesMinimas(struct listaDependencias *lista, char *U){
     
     
 
-}
+} */

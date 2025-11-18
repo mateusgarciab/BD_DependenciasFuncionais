@@ -4,6 +4,7 @@
 
 #include "Headers/leArquivo.h"
 #include "Headers/operacoes.h"
+#include "Headers/buscaLargura.h"
 
 char devolveOperacao(char *entrada) {
     char op, *aux;
@@ -25,6 +26,7 @@ char *devolveNomeArquivo(char *entrada) {
         nomeArquivo++;
     
     nomeArquivo[strcspn(nomeArquivo, " ")] = '\0';
+    puts(nomeArquivo);
     return nomeArquivo;
 }
 
@@ -72,7 +74,6 @@ int main() {
             break;
 
         case 'm':
-            strcpy(copiaNomeArquivo, entrada);
             nomeArquivo = devolveNomeArquivo(entrada);
             
             arq = devolveArquivo(nomeArquivo);
@@ -92,7 +93,13 @@ int main() {
             break;
 
         case 'k':
-            printf("Chaves candidatas, ainda não implementado\n");
+            nomeArquivo = devolveNomeArquivo(entrada);
+            arq = devolveArquivo(nomeArquivo);
+            atr = devolveAtributos(arq);
+            dep = devolveStringDependencias(arq);
+            listaDep = devolveDependencia(dep);
+
+            buscaLargura(listaDep, atr);
             break;
 
         case 'n':
