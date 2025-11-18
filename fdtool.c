@@ -60,9 +60,9 @@ int main() {
             
             char* dep = devolveStringDependencias(arq);
 
-            struct listaDependencias* listaDep = devolveDependencia(dep);;
-            calculaFecho(listaDep, devolveAtributoEntrada(copiaNomeArquivo));
-            
+            struct listaDependencias* listaDep = devolveDependencia(dep);
+            char *fecho = calculaFecho(listaDep, devolveAtributoEntrada(copiaNomeArquivo));
+            printf("%s\n", fecho);
 
             free(atr);
             free(dep);
@@ -72,7 +72,23 @@ int main() {
             break;
 
         case 'm':
-            /* colocar a cobertura minima aqui */
+            strcpy(copiaNomeArquivo, entrada);
+            nomeArquivo = devolveNomeArquivo(entrada);
+            
+            arq = devolveArquivo(nomeArquivo);
+            atr = devolveAtributos(arq);
+            
+            dep = devolveStringDependencias(arq);
+
+            listaDep = devolveDependencia(dep);
+
+            calcularCoberturaMinima(listaDep->DF, listaDep->qtd);
+
+            free(atr);
+            free(dep);
+            free(listaDep->DF);
+            free(listaDep);
+            fclose(arq);
             break;
 
         case 'k':
