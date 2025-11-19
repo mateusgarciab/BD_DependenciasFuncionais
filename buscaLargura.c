@@ -67,12 +67,12 @@ void liberaLista(struct lista *l) {
 }
 
 void imprimeLista(struct lista *l) { /* Para depuração, apagar depois */
-    /* printf("Lista:\n"); */
+    printf("Lista:\n");
     for (int i = l->inicio; i < l->qnt + l->inicio; i++) {
-        /* printf("%s ", l->atributos[i]); */
+        printf("%s ", l->atributos[i]);
     }
-    /* printf("%d itens na lista.", l->qnt); */
-    /* printf("\n"); */
+    printf("%d itens na lista.", l->qnt);
+    printf("\n");
 }
 
 int ehChave(struct listaDependencias *lista, char *item, char *atr) {
@@ -133,7 +133,7 @@ struct chaves *buscaLargura(struct listaDependencias *lista, char* atr) {
                 insereLista(l, aux);
             }
         }
-        /* imprimeLista(l); */
+        imprimeLista(l);
     }
 
     free(aux);

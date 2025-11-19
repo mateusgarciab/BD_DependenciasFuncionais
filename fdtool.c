@@ -27,6 +27,7 @@ char *devolveNomeArquivo(char *entrada) {
         nomeArquivo++;
     
     nomeArquivo[strcspn(nomeArquivo, " ")] = '\0';
+    puts(nomeArquivo);
     return nomeArquivo;
 }
 
@@ -96,6 +97,7 @@ int main() {
             nomeArquivo = devolveNomeArquivo(entrada);
             arq = devolveArquivo(nomeArquivo);
             atr = devolveAtributos(arq);
+            printf("Atributos: %s\n", atr);
             dep = devolveStringDependencias(arq);
             listaDep = devolveDependencia(dep);
 
@@ -103,15 +105,16 @@ int main() {
             for (int i = 0; i < c->qtd; i++)     
                 free(c->chave[i]);
             free(c->chave);
-        
             free(c);
 
             free(atr);
             free(dep);
+            /* printf("alou\n"); */
             free(listaDep->DF);
-            free(nomeArquivo);
+            
             
             free(listaDep);
+            rewind(arq);
             fclose(arq);
             break;
 
