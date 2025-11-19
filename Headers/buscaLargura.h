@@ -9,6 +9,11 @@ struct lista {
     char **atributos;
 };
 
+struct chaves {
+    char **chave;
+    int qtd;
+};
+
 struct lista* criaLista(char *atr);
 
 void insereLista(struct lista *l, char *atr);
@@ -19,6 +24,8 @@ char *devolveItemLista(struct lista *l);
 
 void liberaLista(struct lista *l);
 
-void buscaLargura(struct listaDependencias *lista, char* atr);
+struct chaves *buscaLargura(struct listaDependencias *lista, char* atr);
+
+int comparaAtributos(const void *a, const void *b);
 
 #endif

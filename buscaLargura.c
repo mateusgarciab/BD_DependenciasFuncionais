@@ -27,7 +27,7 @@ int comparaAtributos(const void *a, const void *b) {
 }
 
 void insereLista(struct lista *l, char *atr) {
-    printf("Inserindo %s na lista\n", atr);
+    /* printf("Inserindo %s na lista\n", atr); */
     qsort(atr, strlen(atr), sizeof(char), comparaAtributos);
     for (int i = l->inicio; i < l->qnt + l->inicio; i++) {
         if (strcmp(l->atributos[i], atr) == 0)
@@ -38,7 +38,7 @@ void insereLista(struct lista *l, char *atr) {
     strcpy(l->atributos[l->inicio + l->qnt], atr);
     
     l->qnt++;
-    printf("Inserido de vdd %s %d\n", l->atributos[l->inicio + l->qnt - 1], l->qnt);
+    /* printf("Inserido de vdd %s %d\n", l->atributos[l->inicio + l->qnt - 1], l->qnt); */
 }
 
 unsigned char listaVazia(struct lista *l) {
@@ -67,18 +67,18 @@ void liberaLista(struct lista *l) {
 }
 
 void imprimeLista(struct lista *l) { /* Para depuração, apagar depois */
-    printf("Lista:\n");
+    /* printf("Lista:\n"); */
     for (int i = l->inicio; i < l->qnt + l->inicio; i++) {
-        printf("%s ", l->atributos[i]);
+        /* printf("%s ", l->atributos[i]); */
     }
-    printf("%d itens na lista.", l->qnt);
-    printf("\n");
+    /* printf("%d itens na lista.", l->qnt); */
+    /* printf("\n"); */
 }
 
 int ehChave(struct listaDependencias *lista, char *item, char *atr) {
     char *fecho = calculaFecho(lista, item);
     qsort(fecho, strlen(fecho), sizeof(char), comparaAtributos);
-    printf("Fecho de %s: %s\n", item, fecho);
+    /* printf("Fecho de %s: %s\n", item, fecho); */
 
     int ehChave = strcmp(fecho, atr);
     free(fecho);
@@ -96,16 +96,17 @@ int fazParteChave(char letra, char *item) {
     return 0;
 }
 
-void buscaLargura(struct listaDependencias *lista, char* atr) {
-    /* pegar os que não estão do lado direito */
-    char **chaves = malloc(sizeof(char*) * 100);
-    int qtdChaves = 0, chaveAchada = 0, tamChave = 0;
+struct chaves *buscaLargura(struct listaDependencias *lista, char* atr) {
+    struct chaves *c = malloc(sizeof(struct chaves));
+    c->chave = malloc(sizeof(char*) * 100);
+    c->qtd = 0;
+    int chaveAchada = 0, tamChave = 0;
     char *aux = malloc(sizeof(char) * 100);
 
     struct lista *l = criaLista(atr);
     while (!listaVazia(l)) {
         char *item = devolveItemLista(l);
-        printf("Item removido: %s, %d\n", item, l->qnt);
+        /* printf("Item removido: %s, %d\n", item, l->qnt); */
         if (chaveAchada) {
             if ((int)strlen(item) > tamChave) {
                 l->qnt = 0;
@@ -114,9 +115,9 @@ void buscaLargura(struct listaDependencias *lista, char* atr) {
         }
         
         if (ehChave(lista, item, atr)) {
-            printf("=========== Chave encontrada: %s\n", item);
-            chaves[qtdChaves] = item;
-            qtdChaves++;
+            /* printf("=========== Chave encontrada: %s\n", item); */
+            c->chave[c->qtd] = item;
+            c->qtd++;
             chaveAchada = 1;
             tamChave = strlen(item);
         }
@@ -128,60 +129,20 @@ void buscaLargura(struct listaDependencias *lista, char* atr) {
                 strcpy(aux, item);
                 strncat(aux, &atr[i], strlen(aux) + 1);
                 aux[strlen(item) + 1] = '\0';
-                puts(aux);
+                /* puts(aux); */
                 insereLista(l, aux);
             }
         }
-        imprimeLista(l);
+        /* imprimeLista(l); */
     }
 
     free(aux);
     liberaLista(l); 
 
     printf("Chaves encontradas:\n");
-    for (int i = 0; i < qtdChaves; i++) {
-        printf("%s\n", chaves[i]);
+    for (int i = 0; i < c->qtd; i++) {
+        printf("%s\n", c->chave[i]);
     }
+
+    return c;
 }
-
-/* int main() {
-    char atributos[] = "ABCDEF";
-    struct lista *l = criaLista(atributos);
-
-    char *letra = malloc(sizeof(char) * 10);
-    letra[0] = 'G';
-    letra[1] = '\0';
-    insereLista(l, letra);
-    letra[0] = 'B';
-    letra[1] = 'A';
-    letra[2] = '\0';
-    insereLista(l, letra);
-    letra[0] = 'A';
-    letra[1] = 'B';
-    insereLista(l, letra);
-    insereLista(l, "CDE");
-    insereLista(l, "CBD");
-    insereLista(l, "CDAFEB");
-    insereLista(l, "A");
-    insereLista(l, "F");
-    insereLista(l, "EF");
-    insereLista(l, "BA");
-
-    printf("%d %d\n", l->inicio, l->qnt);
-    printf("Atributos na lista:\n");
-    for (int i = 0; i < l->qnt - l->inicio; i++) {
-        printf("%s\n", l->atributos[i]);
-    }
-
-    char *item;
-    while (!listaVazia(l)) {
-        item = devolveItemLista(l);
-        printf("Item removido: %s %d %d\n", item, l->inicio, l->qnt);
-    }
-
-
-
-
-    liberaLista(l);
-    return 0;
-} */

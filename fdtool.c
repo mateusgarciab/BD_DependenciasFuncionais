@@ -15,6 +15,7 @@ char devolveOperacao(char *entrada) {
     while(op == ' ') 
         op = aux[i++];
 
+    /* free(aux); */
     return op;
 }
 
@@ -26,7 +27,6 @@ char *devolveNomeArquivo(char *entrada) {
         nomeArquivo++;
     
     nomeArquivo[strcspn(nomeArquivo, " ")] = '\0';
-    puts(nomeArquivo);
     return nomeArquivo;
 }
 
@@ -99,11 +99,36 @@ int main() {
             dep = devolveStringDependencias(arq);
             listaDep = devolveDependencia(dep);
 
-            buscaLargura(listaDep, atr);
+            struct chaves *c = buscaLargura(listaDep, atr);
+            for (int i = 0; i < c->qtd; i++)     
+                free(c->chave[i]);
+            free(c->chave);
+        
+            free(c);
+
+            free(atr);
+            free(dep);
+            free(listaDep->DF);
+            free(nomeArquivo);
+            
+            free(listaDep);
+            fclose(arq);
             break;
 
         case 'n':
-            printf("Formas normais, ainda não implementado\n");
+            nomeArquivo = devolveNomeArquivo(entrada);
+            arq = devolveArquivo(nomeArquivo);
+            atr = devolveAtributos(arq);
+            dep = devolveStringDependencias(arq);
+            listaDep = devolveDependencia(dep);
+
+            formasNormais(listaDep, atr);
+
+            free(atr);
+            free(dep);
+            free(listaDep->DF);
+            free(listaDep);
+            fclose(arq);
             break;
         default:
             printf("Operação inválida\n");

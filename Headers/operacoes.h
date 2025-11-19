@@ -17,4 +17,6 @@ char *calculaFecho(struct listaDependencias *lista, char *X);
 
 void calcularCoberturaMinima(struct Dependencia *DF, int qtd);
 
+void formasNormais(struct listaDependencias *l, char *atr);
+
 #endif

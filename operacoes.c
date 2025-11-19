@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "Headers/operacoes.h"
+#include "Headers/buscaLargura.h"
 
 struct listaDependencias* devolveDependencia(char* dependencias) {
     struct Dependencia *DF = NULL;
@@ -193,8 +194,59 @@ void calcularCoberturaMinima(struct Dependencia *DF, int qtd){
     }
 }
 
-/* void calcularChavesMinimas(struct listaDependencias *lista, char *U){
-    
+int jaEhprimo(char *primos, char atr, int tamPrimos) {
+    for (int i = 0; i < tamPrimos; i++) {
+        if (atr == primos[i])
+            return 1;
+    }
+    return 0;
+}
+
+int estaNasChaves(char **chaves, char *ladoEsquerdo) {
+    for (int i = 0; chaves[i][0] != '\0'; i++)
+        if (strcmp(chaves[i], ladoEsquerdo) == 0)
+            return 1;
+    return 0;
+}
+
+/* verificar se está em 3fn e bcnf*/
+void formasNormais(struct listaDependencias *l, char *atr) {
+    char **chaves = buscaLargura(l, atr);
+    for (int i = 0; chaves[i][0] != '\0'; i++) {
+        printf("Chave candidata: %s\n", chaves[i]);
+    }
+    char *primos = malloc(sizeof(char) * 26);
+    int tamPrimos = 0; 
+    int ehBCNF = 1, eh3FN = 1;
+
+    for (int i = 0; chaves[i][0] != '\0'; i++) 
+        for (int j = 0; chaves[i][j] != '\0'; j++) 
+            if (!jaEhprimo(primos, chaves[i][j], tamPrimos)) {
+                primos[tamPrimos] = chaves[i][j];
+                tamPrimos++;
+            }
+
+    qsort(primos, tamPrimos, sizeof(char), comparaAtributos);
+    primos[tamPrimos] = '\0';
+
+    puts(primos);
+
+    for (int i = 0; i < l->qtd; i++) {
+        /* para bcnf vertificar se lado esquerdo eh uma chave */
+        if (!estaNasChaves(chaves, l->DF[i].esquerda)) {
+            ehBCNF = 0;
+            printf("Violação de BCNF: %s -> %s\n", l->DF[i].esquerda, l->DF[i].direita);
+            /* salvar em algum lugar que aqui deu ruim */
+        }
+    }
+
+
+
     
 
-} */
+    free(primos);
+    for (int i = 0; chaves[i][0] != '\0'; i++) {
+        free(chaves[i]);
+    }
+    free(chaves);
+}
