@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -std=c11 -Wall -Wextra
 LDFLAGS = -lm
 
-objects = leArquivo.o operacoes.o buscaLargura.o
+objects = leArquivo.o operacoes.o listaDeBusca.o
 
 all: fdtool
 
@@ -15,8 +15,8 @@ leArquivo.o: leArquivo.c
 operacoes.o: operacoes.c 
 	$(CC) -c operacoes.c $(CFLAGS)
 
-buscaLargura.o: buscaLargura.c 
-	$(CC) -c buscaLargura.c $(CFLAGS)
+listaDeBusca.o: listaDeBusca.c 
+	$(CC) -c listaDeBusca.c $(CFLAGS)
 
 clean:
 	rm -f $(objects) 

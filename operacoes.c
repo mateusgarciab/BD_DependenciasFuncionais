@@ -4,36 +4,35 @@
 #include <stddef.h>
 
 #include "Headers/operacoes.h"
-#include "Headers/buscaLargura.h"
+#include "Headers/listaDeBusca.h"
 
 struct listaDependencias* devolveDependencia(char* dependencias) {
-    struct Dependencia *DF = NULL;
-    int qtd = 0; //quantidade de dependências
+    struct listaDependencias *lista = malloc(sizeof(struct listaDependencias));
+    lista->DF = NULL;
+    lista->qtd = 0;
     
     for(int i = 0; i < (int)strlen(dependencias); i++){
-        DF = realloc(DF, sizeof(struct Dependencia) * (qtd + 1));
+        lista->DF = realloc(lista->DF, sizeof(struct Dependencia) * (lista->qtd + 1));
 
         int j = 0;
         while(dependencias[i] != '-'){
-            DF[qtd].esquerda[j] = dependencias[i];
+            lista->DF[lista->qtd].esquerda[j] = dependencias[i];
             j++;
             i++;
         }
-        DF[qtd].esquerda[j] = '\0'; //finaliza a string da esquerda
+        lista->DF[lista->qtd].esquerda[j] = '\0'; //finaliza a string da esquerda
         i += 2; //pula o '->'
         j = 0;
 
         while(dependencias[i] != ',' && i < (int)strlen(dependencias)){
-            DF[qtd].direita[j] = dependencias[i];
+            lista->DF[lista->qtd].direita[j] = dependencias[i];
             j++;
             i++;
         }
-        DF[qtd].direita[j] = '\0'; //finaliza a string da direita
-        qtd++;
+        lista->DF[lista->qtd].direita[j] = '\0'; //finaliza a string da direita
+        lista->qtd++;
     }
-    struct listaDependencias *lista = malloc(sizeof(struct listaDependencias));
-    lista->DF = DF;
-    lista->qtd = qtd;
+
 
     return lista;
 }
@@ -90,8 +89,6 @@ char *calculaFecho(struct listaDependencias *lista, char *X){
     }while(mudou);
     fecho[tamanhoFecho] = '\0';
 
-    //imprime fecho
-    //printf("%s\n", fecho);
     return fecho;
 }
 
@@ -193,6 +190,55 @@ void calcularCoberturaMinima(struct Dependencia *DF, int qtd){
         printf("%s -> %s\n", DF_minimo[i].esquerda, DF_minimo[i].direita);
     }
 }
+
+
+
+struct chaves *buscaLargura(struct listaDependencias *lista, char* atr) {
+    struct chaves *c = malloc(sizeof(struct chaves));
+    c->chave = malloc(sizeof(char*) * 100);
+    c->qtd = 0;
+    int chaveAchada = 0, tamChave = 0;
+    char *aux = malloc(sizeof(char) * 100);
+
+    struct lista *l = criaLista(atr);
+    while (!listaVazia(l)) {
+        char *item = devolveItemLista(l);
+        if (chaveAchada) {
+            if ((int)strlen(item) > tamChave) {
+                l->qnt = 0;
+                continue;
+            }
+        }
+        
+        if (ehChave(lista, item, atr)) {
+            c->chave[c->qtd] = item;
+            c->qtd++;
+            chaveAchada = 1;
+            tamChave = strlen(item);
+        }
+
+
+
+        for (int i = 0; i < (int)strlen(atr); i++) {
+            if ((!fazParteChave(atr[i], item)) && (!chaveAchada)) {
+                strcpy(aux, item);
+                strncat(aux, &atr[i], strlen(aux) + 1);
+                aux[strlen(item) + 1] = '\0';
+                insereLista(l, aux);
+            }
+        }
+    }
+
+    free(aux);
+    liberaLista(l); 
+
+    for (int i = 0; i < c->qtd; i++) {
+        printf("%s\n", c->chave[i]);
+    }
+
+    return c;
+}
+
 
 int jaEhprimo(char *primos, char atr, int tamPrimos) {
     for (int i = 0; i < tamPrimos; i++) {

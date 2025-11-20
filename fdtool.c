@@ -4,7 +4,7 @@
 
 #include "Headers/leArquivo.h"
 #include "Headers/operacoes.h"
-#include "Headers/buscaLargura.h"
+#include "Headers/listaDeBusca.h"
 
 char devolveOperacao(char *entrada) {
     char op, *aux;
@@ -26,7 +26,6 @@ char *devolveNomeArquivo(char *entrada) {
         nomeArquivo++;
     
     nomeArquivo[strcspn(nomeArquivo, " ")] = '\0';
-    puts(nomeArquivo);
     return nomeArquivo;
 }
 
@@ -96,7 +95,6 @@ int main() {
             nomeArquivo = devolveNomeArquivo(entrada);
             arq = devolveArquivo(nomeArquivo);
             atr = devolveAtributos(arq);
-            printf("Atributos: %s\n", atr);
             dep = devolveStringDependencias(arq);
             listaDep = devolveDependencia(dep);
 
@@ -108,7 +106,6 @@ int main() {
 
             free(atr);
             free(dep);
-            /* printf("alou\n"); */
             free(listaDep->DF);
             
             

@@ -43,21 +43,3 @@ char *devolveStringDependencias(FILE *arq) {
     }
     return dependencias;
 }
-
-/* Só para testar */
-/* int main() {
-    printf("main do leaaaarquivo");
-    FILE *arq = devolveArquivo("./exemplos/1.fds"); 
-    char *atributos, *dependencias;
-
-    printf("Arquivo aberto\n");
-    atributos = devolveAtributos(arq);
-    printf("Atributos lidos: %s\n", atributos);
-    dependencias = devolveDependencias(arq);
-    printf("Dependencias lidas: %s\n", dependencias);
-
-    fclose(arq);
-    free(atributos);
-    free(dependencias);
-    return 0;
-} */
