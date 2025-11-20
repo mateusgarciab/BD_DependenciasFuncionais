@@ -15,7 +15,6 @@ char devolveOperacao(char *entrada) {
     while(op == ' ') 
         op = aux[i++];
 
-    /* free(aux); */
     return op;
 }
 

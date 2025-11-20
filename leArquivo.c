@@ -14,7 +14,7 @@ FILE *devolveArquivo(char *nome) {
 }
 
 char *devolveAtributos(FILE *arq) {
-    char *atributos = malloc(sizeof(char) * 26);
+    char *atributos = calloc(26, sizeof(char));
     int i = 0;
     char c; 
 
