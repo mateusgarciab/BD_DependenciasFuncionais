@@ -232,9 +232,9 @@ struct chaves *buscaLargura(struct listaDependencias *lista, char* atr) {
     free(aux);
     liberaLista(l); 
 
-    for (int i = 0; i < c->qtd; i++) {
+    /* for (int i = 0; i < c->qtd; i++) {
         printf("%s\n", c->chave[i]);
-    }
+    } */
 
     return c;
 }
@@ -248,51 +248,94 @@ int jaEhprimo(char *primos, char atr, int tamPrimos) {
     return 0;
 }
 
-int estaNasChaves(char **chaves, char *ladoEsquerdo) {
-    for (int i = 0; chaves[i][0] != '\0'; i++)
-        if (strcmp(chaves[i], ladoEsquerdo) == 0)
+int estaNasChaves(struct chaves *c, char *ladoEsquerdo) {
+    for (int i = 0; i < c->qtd; i++)
+        if (strcmp(c->chave[i], ladoEsquerdo) == 0)
             return 1;
     return 0;
 }
 
 /* verificar se está em 3fn e bcnf*/
 void formasNormais(struct listaDependencias *l, char *atr) {
-    char **chaves = buscaLargura(l, atr);
-    for (int i = 0; chaves[i][0] != '\0'; i++) {
-        printf("Chave candidata: %s\n", chaves[i]);
+    struct chaves *c = buscaLargura(l, atr);
+
+    for (int i = 0; i < c->qtd; i++) {
+        printf("Chave candidata: %s\n", c->chave[i]);
     }
+    //printf("AQUI\n");
     char *primos = malloc(sizeof(char) * 26);
     int tamPrimos = 0; 
     int ehBCNF = 1, eh3FN = 1;
 
-    for (int i = 0; chaves[i][0] != '\0'; i++) 
-        for (int j = 0; chaves[i][j] != '\0'; j++) 
-            if (!jaEhprimo(primos, chaves[i][j], tamPrimos)) {
-                primos[tamPrimos] = chaves[i][j];
+    for (int i = 0; i < c->qtd; i++){
+        for (int j = 0; c->chave[i][j] != '\0'; j++){
+            if (!jaEhprimo(primos, c->chave[i][j], tamPrimos)) {
+                primos[tamPrimos] = c->chave[i][j];
                 tamPrimos++;
             }
+        }
+    }
+    
 
     qsort(primos, tamPrimos, sizeof(char), comparaAtributos);
     primos[tamPrimos] = '\0';
 
-    puts(primos);
+    char *naoChaves = malloc(sizeof(char));
+    naoChaves[0] = '\0';
+    char *naoPrimos = malloc(sizeof(char));
 
     for (int i = 0; i < l->qtd; i++) {
         /* para bcnf vertificar se lado esquerdo eh uma chave */
-        if (!estaNasChaves(chaves, l->DF[i].esquerda)) {
+        if (!estaNasChaves(c, l->DF[i].esquerda)) {
             ehBCNF = 0;
-            printf("Violação de BCNF: %s -> %s\n", l->DF[i].esquerda, l->DF[i].direita);
-            /* salvar em algum lugar que aqui deu ruim */
+            naoChaves = realloc(naoChaves, sizeof(char) * (strlen(l->DF[i].esquerda) + 1));
+            strcpy(naoChaves, l->DF[i].esquerda);
+            printf("Violação de BCNF\n");
+            break;
+        }
+    }
+    if(ehBCNF)
+        printf("A relação está em BCNF\n");
+    else{
+        for (int i = 0; i < l->qtd; i++) {
+            /* para 3fn vertificar se lado direito eh primo */
+            for (int j = 0; l->DF[i].direita[j] != '\0'; j++) {
+                if (!jaEhprimo(primos, l->DF[i].direita[j], tamPrimos)) {
+                    eh3FN = 0;
+                    naoPrimos = realloc(naoPrimos, sizeof(char) * (strlen(l->DF[i].direita) + 1));
+                    strcpy(naoPrimos, l->DF[i].direita);
+                    break;
+                }
+            }
+        }
+        if(eh3FN)
+            printf("A relação está em 3FN\n");
+        else {
+            printf("Violação de 3FN\n");
         }
     }
 
-
-
-    
+    //imprimir naoChaves e naoPrimos
+    for(int i = 0; i < l->qtd; i++){
+        if(strcmp(naoChaves, l->DF[i].esquerda) == 0){
+            printf("Dependência que viola BCNF: %s -> %s (%s Nao eh superchave)\n", l->DF[i].esquerda, l->DF[i].direita, naoChaves);
+        }
+        for(int j = 0; l->DF[i].direita[j] != '\0'; j++){
+            if(strchr(naoPrimos, l->DF[i].direita[j]) != NULL){
+                if(naoChaves[0] != '\0'){
+                    printf("Dependência que viola 3FN: %s -> %s (%s Atributo nao primo, %s Nao eh superchave)\n", l->DF[i].esquerda, l->DF[i].direita, naoPrimos, naoChaves);
+                    break;
+                }
+                else{
+                    printf("Dependência que viola 3FN: %s -> %s (%s Atributo nao primo)\n", l->DF[i].esquerda, l->DF[i].direita, naoPrimos);
+                }
+            }
+        }
+    }
 
     free(primos);
-    for (int i = 0; chaves[i][0] != '\0'; i++) {
-        free(chaves[i]);
+    for (int i = 0; i < c->qtd; i++) {
+        free(c->chave[i]);
     }
-    free(chaves);
+    free(c);
 }

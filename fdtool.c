@@ -99,6 +99,12 @@ int main() {
             listaDep = devolveDependencia(dep);
 
             struct chaves *c = buscaLargura(listaDep, atr);
+
+            //imprimir as chaves 
+            for (int i = 0; i < c->qtd; i++) {
+                printf("%s\n", c->chave[i]);
+            }
+
             for (int i = 0; i < c->qtd; i++)     
                 free(c->chave[i]);
             free(c->chave);
