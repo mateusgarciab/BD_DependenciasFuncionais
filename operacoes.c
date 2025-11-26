@@ -88,6 +88,7 @@ char *calculaFecho(struct listaDependencias *lista, char *X){
         }
     }while(mudou);
     fecho[tamanhoFecho] = '\0';
+    qsort(fecho, tamanhoFecho, sizeof(char), comparaAtributos);
 
     return fecho;
 }
