@@ -1,0 +1,2 @@
+U = {A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}
+F = {A -> B, B -> A, C -> D, D -> E, E -> F, F -> G, G -> H, H -> I, I -> J, J -> K, K -> L, L -> M, M -> N, N -> O, O -> P, P -> Q, Q -> R, R -> S, S -> T, T -> U, U -> V, V -> W, W -> X, X -> Y, Y -> Z, Z -> A,A -> C,B -> E,D -> G,F -> I,G -> K,H -> M,I -> O,J -> Q,L -> P,M -> R,N -> T,O -> V,P -> X,Q -> Z,R -> A }

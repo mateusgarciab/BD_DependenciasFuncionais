@@ -58,7 +58,6 @@ int main() {
             
             FILE* arq = devolveArquivo(nomeArquivo);
             char* atr = devolveAtributos(arq);
-            
             char* dep = devolveStringDependencias(arq);
 
             struct listaDependencias* listaDep = devolveDependencia(dep);

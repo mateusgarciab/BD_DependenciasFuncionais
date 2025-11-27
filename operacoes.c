@@ -10,7 +10,7 @@ struct listaDependencias* devolveDependencia(char* dependencias) {
     struct listaDependencias *lista = malloc(sizeof(struct listaDependencias));
     lista->DF = NULL;
     lista->qtd = 0;
-    
+
     for(int i = 0; i < (int)strlen(dependencias); i++){
         lista->DF = realloc(lista->DF, sizeof(struct Dependencia) * (lista->qtd + 1));
 
@@ -88,6 +88,7 @@ char *calculaFecho(struct listaDependencias *lista, char *X){
         }
     }while(mudou);
     fecho[tamanhoFecho] = '\0';
+
     qsort(fecho, tamanhoFecho, sizeof(char), comparaAtributos);
 
     return fecho;
@@ -107,10 +108,6 @@ void calcularCoberturaMinima(struct Dependencia *DF, int qtd){
             qtd_unitario++;
         }
     }
-    /* printf("Cobertura mínima - Etapa 1 (lado direito unitário):\n");
-    for(int i = 0; i < qtd_unitario; i++){
-        printf("%s -> %s\n", DF_unitario[i].esquerda, DF_unitario[i].direita);
-    } */
 
     //Etapa 2: Remover atributos estranhos do lado esquerdo
     struct listaDependencias *lista_temp;
@@ -148,10 +145,6 @@ void calcularCoberturaMinima(struct Dependencia *DF, int qtd){
             }
         }
     }
-    /* printf("Cobertura mínima - Etapa 2 (remover atributos estranhos do lado esquerdo):\n");
-    for(int i = 0; i < qtd_unitario; i++){
-        printf("%s -> %s\n", DF_unitario[i].esquerda, DF_unitario[i].direita);
-    } */
 
     //Etapa 3: Remover dependências funcionais redundantes
     struct Dependencia *DF_minimo = malloc(sizeof(struct Dependencia) * qtd_unitario);
@@ -192,8 +185,6 @@ void calcularCoberturaMinima(struct Dependencia *DF, int qtd){
     }
 }
 
-
-
 struct chaves *buscaLargura(struct listaDependencias *lista, char* atr) {
     struct chaves *c = malloc(sizeof(struct chaves));
     c->chave = malloc(sizeof(char*) * 100);
@@ -232,14 +223,8 @@ struct chaves *buscaLargura(struct listaDependencias *lista, char* atr) {
 
     free(aux);
     liberaLista(l); 
-
-    /* for (int i = 0; i < c->qtd; i++) {
-        printf("%s\n", c->chave[i]);
-    } */
-
     return c;
 }
-
 
 int jaEhprimo(char *primos, char atr, int tamPrimos) {
     for (int i = 0; i < tamPrimos; i++) {
@@ -256,17 +241,60 @@ int estaNasChaves(struct chaves *c, char *ladoEsquerdo) {
     return 0;
 }
 
-/* verificar se está em 3fn e bcnf*/
+char *ehBCNF(struct listaDependencias *l, struct chaves *c){
+    char *naoChaves = NULL;
+    for (int i = 0; i < l->qtd; i++) {
+        /* para bcnf vertificar se lado esquerdo eh uma chave */
+        if (!estaNasChaves(c, l->DF[i].esquerda)) {
+            naoChaves = realloc(naoChaves, sizeof(char) * (strlen(l->DF[i].esquerda) + 1));
+            strcpy(naoChaves, l->DF[i].esquerda);
+
+            return naoChaves;
+        }
+    }
+
+    return NULL;
+}
+
+char *eh3FN(struct listaDependencias *l, struct chaves *c, char *primos){
+    //verificar se o lado esquerdo não é superchave e o lado direito tem atributo não primo
+    for (int i = 0; i < l->qtd; i++) {
+        //verificar se lado esquerdo é superchave
+        int ehSuperChave = 0;
+        for (int j = 0; j < c->qtd; j++) {
+            if (strcmp(c->chave[j], l->DF[i].esquerda) == 0) {
+                ehSuperChave = 1;
+                break;
+            }
+        }
+
+        if (!ehSuperChave) {
+            //verificar se o lado direito tem atributo não primo
+            for (int j = 0; l->DF[i].direita[j] != '\0'; j++) {
+                int ehPrimo = 0;
+                for (int k = 0; primos[k] != '\0'; k++) {
+                    if (l->DF[i].direita[j] == primos[k]) {
+                        ehPrimo = 1;
+                        break;
+                    }
+                }
+                if (!ehPrimo) {
+                    char *naoPrimos = malloc(sizeof(char) * 2);
+                    naoPrimos[0] = l->DF[i].direita[j];
+                    naoPrimos[1] = '\0';
+                    return naoPrimos;
+                }
+            }
+        }
+    }
+
+    return NULL;
+}
+
 void formasNormais(struct listaDependencias *l, char *atr) {
     struct chaves *c = buscaLargura(l, atr);
-
-    for (int i = 0; i < c->qtd; i++) {
-        printf("Chave candidata: %s\n", c->chave[i]);
-    }
-    //printf("AQUI\n");
     char *primos = malloc(sizeof(char) * 26);
     int tamPrimos = 0; 
-    int ehBCNF = 1, eh3FN = 1;
 
     for (int i = 0; i < c->qtd; i++){
         for (int j = 0; c->chave[i][j] != '\0'; j++){
@@ -276,63 +304,39 @@ void formasNormais(struct listaDependencias *l, char *atr) {
             }
         }
     }
-    
 
     qsort(primos, tamPrimos, sizeof(char), comparaAtributos);
     primos[tamPrimos] = '\0';
 
-    char *naoChaves = malloc(sizeof(char));
-    naoChaves[0] = '\0';
-    char *naoPrimos = malloc(sizeof(char));
-
-    for (int i = 0; i < l->qtd; i++) {
-        /* para bcnf vertificar se lado esquerdo eh uma chave */
-        if (!estaNasChaves(c, l->DF[i].esquerda)) {
-            ehBCNF = 0;
-            naoChaves = realloc(naoChaves, sizeof(char) * (strlen(l->DF[i].esquerda) + 1));
-            strcpy(naoChaves, l->DF[i].esquerda);
-            printf("Violação de BCNF\n");
-            break;
-        }
-    }
-    if(ehBCNF)
+    char *naoChaves = ehBCNF(l, c);
+    if(naoChaves != NULL)
+        printf("BCNF VIOLATIONS\n");
+    else
         printf("A relação está em BCNF\n");
-    else{
-        for (int i = 0; i < l->qtd; i++) {
-            /* para 3fn vertificar se lado direito eh primo */
-            for (int j = 0; l->DF[i].direita[j] != '\0'; j++) {
-                if (!jaEhprimo(primos, l->DF[i].direita[j], tamPrimos)) {
-                    eh3FN = 0;
-                    naoPrimos = realloc(naoPrimos, sizeof(char) * (strlen(l->DF[i].direita) + 1));
-                    strcpy(naoPrimos, l->DF[i].direita);
-                    break;
-                }
+    
+    char *naoPrimos = eh3FN(l, c, primos);
+    if(naoPrimos != NULL)
+        printf("3FN VIOLATIONS\n");
+    else
+        printf("A relação está em 3FN\n");
+
+
+    //imprimir naoChaves
+    for(int i = 0; i < l->qtd; i++)
+        if(strcmp(naoChaves, l->DF[i].esquerda) == 0)
+            printf("VIOLATION BCNF: %s -> %s (%s not superkey)\n", l->DF[i].esquerda, l->DF[i].direita, naoChaves);
+
+    //imprimir naoPrimos
+    for(int i = 0; i < l->qtd; i++){
+        for(int j = 0; l->DF[i].direita[j] != '\0'; j++){
+            if(l->DF[i].direita[j] == naoPrimos[0]){
+                printf("VIOLATION 3FN: %s -> %s (%c not prime, %s not superkey)\n", l->DF[i].esquerda, l->DF[i].direita, naoPrimos[0], l->DF[i].esquerda);
             }
-        }
-        if(eh3FN)
-            printf("A relação está em 3FN\n");
-        else {
-            printf("Violação de 3FN\n");
         }
     }
 
-    //imprimir naoChaves e naoPrimos
-    for(int i = 0; i < l->qtd; i++){
-        if(strcmp(naoChaves, l->DF[i].esquerda) == 0){
-            printf("Dependência que viola BCNF: %s -> %s (%s Nao eh superchave)\n", l->DF[i].esquerda, l->DF[i].direita, naoChaves);
-        }
-        for(int j = 0; l->DF[i].direita[j] != '\0'; j++){
-            if(strchr(naoPrimos, l->DF[i].direita[j]) != NULL){
-                if(naoChaves[0] != '\0'){
-                    printf("Dependência que viola 3FN: %s -> %s (%s Atributo nao primo, %s Nao eh superchave)\n", l->DF[i].esquerda, l->DF[i].direita, naoPrimos, naoChaves);
-                    break;
-                }
-                else{
-                    printf("Dependência que viola 3FN: %s -> %s (%s Atributo nao primo)\n", l->DF[i].esquerda, l->DF[i].direita, naoPrimos);
-                }
-            }
-        }
-    }
+    free(naoChaves);
+    free(naoPrimos);
 
     free(primos);
     for (int i = 0; i < c->qtd; i++) {
