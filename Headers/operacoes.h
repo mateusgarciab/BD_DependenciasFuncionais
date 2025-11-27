@@ -38,7 +38,7 @@ int estaNasChaves(struct chaves *c, char *ladoEsquerdo);
 char *ehBCNF(struct listaDependencias *l, struct chaves *c);
 
 //Verifica se as dependências estão em 3FN
-char *eh3FN(struct listaDependencias *l, struct chaves *c, char *primos)
+char *eh3FN(struct listaDependencias *l, struct chaves *c, char *primos);
 
 //Verifica as formas normais 3FN e BCNF
 void formasNormais(struct listaDependencias *l, char *atr);
