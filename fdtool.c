@@ -68,6 +68,7 @@ int main() {
             free(dep);
             free(listaDep->DF);
             free(listaDep);
+            free(fecho);
             fclose(arq);
             break;
 

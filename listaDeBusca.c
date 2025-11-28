@@ -11,12 +11,14 @@ struct lista* criaLista(char *atr) {
     l->inicio = 0;
     l->qnt = 0;
     l->atributos = malloc(sizeof(char*) * 100);
+
     int nAtr = strlen(atr);
     for (int i = 0; i < nAtr; i++) {
         l->atributos[i] = malloc(sizeof(char) * 2);
         l->atributos[i][0] = atr[i];
         l->atributos[i][1] = '\0';
         l->qnt++;
+        l->total_alocado++;
     }
 
     return l;
@@ -36,6 +38,10 @@ void insereLista(struct lista *l, char *atr) {
     l->atributos[l->inicio + l->qnt] = malloc(sizeof(char) * (strlen(atr) + 1));
     strcpy(l->atributos[l->inicio + l->qnt], atr);
     
+    if(l->inicio + l->qnt >= l->total_alocado){
+        l->total_alocado = l->inicio + l->qnt + 1;
+    }
+
     l->qnt++;
 }
 
@@ -57,8 +63,9 @@ char *devolveItemLista(struct lista *l) {
 }
 
 void liberaLista(struct lista *l) {
-    for (int i = 0; i < l->qnt; i++) {
-        free(l->atributos[i]);
+    for (int i = 0; i < l->total_alocado; i++) {
+        if(l->atributos[i] != NULL)
+            free(l->atributos[i]);
     }
     free(l->atributos);
     free(l);

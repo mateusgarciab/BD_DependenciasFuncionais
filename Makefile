@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -std=c11 -Wall -Wextra
+CFLAGS = -std=c11 -Wall -Wextra -g
 LDFLAGS = -lm
 
 objects = leArquivo.o operacoes.o listaDeBusca.o
