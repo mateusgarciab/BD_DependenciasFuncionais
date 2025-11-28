@@ -6,6 +6,7 @@
 struct lista {
     int inicio;
     int qnt;
+    int total_alocado;
     char **atributos;
 };
 

@@ -113,10 +113,6 @@ void calcularCoberturaMinima(struct Dependencia *DF, int qtd){
             qtd_unitario++;
         }
     }
-    printf("Cobertura mínima - Etapa 1 (lado direito unitário):\n");
-    for(int i = 0; i < qtd_unitario; i++){
-        printf("%s -> %s\n", DF_unitario[i].esquerda, DF_unitario[i].direita);
-    }
 
     //Etapa 2: Remover atributos estranhos do lado esquerdo
     for(int i = 0; i < qtd_unitario; i++){
@@ -186,11 +182,6 @@ void calcularCoberturaMinima(struct Dependencia *DF, int qtd){
             }
         }
     }
-    printf("Cobertura mínima - Etapa 2 (remover atributos estranhos do lado esquerdo):\n");
-    for(int i = 0; i < qtd_unitario; i++){
-        printf("%s -> %s\n", DF_unitario[i].esquerda, DF_unitario[i].direita);
-    }
-
 
     //Etapa 3: Remover dependências funcionais redundantes
     struct Dependencia *DF_final = malloc(sizeof(struct Dependencia) * qtd_unitario);
@@ -233,7 +224,6 @@ void calcularCoberturaMinima(struct Dependencia *DF, int qtd){
         }
     }
 
-    printf("Cobertura mínima - Etapa 3 (remover dependências funcionais redundantes):\n");
     for(int i = 0; i < qtd_final; i++){
         printf("%s -> %s\n", DF_final[i].esquerda, DF_final[i].direita);
     }
@@ -360,10 +350,12 @@ char *eh3FN(struct listaDependencias *l, struct chaves *c, char *primos){
                     }
                 }
                 if (!ehPrimo) {
-                    char *naoPrimos = malloc(sizeof(char) * 2);
-                    naoPrimos[0] = l->DF[i].direita[j];
-                    naoPrimos[1] = '\0';
-                    return naoPrimos;
+                    /* guardar o lado esquerdo e dereito no vetor e retornar */
+                    char *naoPrimo = malloc(sizeof(char) * 3);
+                    naoPrimo[0] = l->DF[i].direita[j];
+                    naoPrimo[1] = (char)i;
+                    naoPrimo[2] = '\0';
+                    return naoPrimo;
                 }
             }
         }
@@ -374,13 +366,6 @@ char *eh3FN(struct listaDependencias *l, struct chaves *c, char *primos){
 
 void formasNormais(struct listaDependencias *l, char *atr) {
     struct chaves *c = buscaLargura(l, atr);
-    //imprime as chaves encontradas
-    printf("Chaves encontradas:\n");
-    for (int i = 0; i < c->qtd; i++) {
-        printf("%s\n", c->chave[i]);
-    }
-
-
     char *primos = malloc(sizeof(char) * 26);
     int tamPrimos = 0; 
 
@@ -417,16 +402,25 @@ void formasNormais(struct listaDependencias *l, char *atr) {
             }
     }
     //imprimir naoPrimos
+    int printou = 0;
     if(naoPrimos != NULL) {
         for(int i = 0; i < l->qtd; i++){
-            if(strcmp(naoPrimos, l->DF[i].direita) == 0){
-                printf("VIOLATION 3FN: %s -> %s (%c not prime, %s not superkey)\n", l->DF[i].esquerda, l->DF[i].direita, naoPrimos[0], l->DF[i].esquerda);
+            for(int j = 0; l->DF[i].direita[j] != '\0'; j++){
+                if(l->DF[i].direita[j] == naoPrimos[0]){
+                    int index = (int)naoPrimos[1];
+                    printf("VIOLATION 3FN: %s -> %s (%c not prime, %s not superkey)\n", l->DF[i].esquerda, l->DF[i].direita, naoPrimos[0], l->DF[index].esquerda);
+                    printou = 1;
+                    break;
+                }
             }
+            if(printou)
+                break;
         }
     }
 
     free(naoChaves);
     free(naoPrimos);
+    
 
     free(primos);
     for (int i = 0; i < c->qtd; i++) {
