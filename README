@@ -1,0 +1,49 @@
+Trabalho feito por: 
+    Mateus Garcia Baiak 20224378
+    Agnaldo dos Santos Prieto Junior GRR20221259
+
+Organização:
+Makefile:
+    O código pode ser compilado através do comando: 
+        make: compila o código com as flags -std=c11 -Wall -Wextra
+    Os comandos make clean e make purge estão funcionando fazendo respectivamente: 
+        make clean: remove arquivos objeto mantendo executavel
+        make purge: remove arquivos objeto e executavel
+
+Execução:
+    O código pode ser executado através do comando:
+        ./fdtool 
+    Os exemplos devem ser passados depois do --fds e passando o caminho do arquivo, por exemplo:
+        ./fdtool <operação> --fds exemplos/e1.fds
+    Após a execução o programa entrará em modo interativo, cada vez que for impresso $ o usuário poderá digitar uma nova operação ou sair do programa digitando sair, as operações são:
+        clousure ou c: calcula o fecho de um atributo ou conjunto de atributos, ao final incluir --X <atributos>
+            $ fdtool clousure --fds exemplos/e1.fds --X BC
+        minicover ou m: calcula a cobertura mínima das dependências funcionais
+            $ fdtool minicover --fds exemplos/e1.fds
+        keys ou k: calcula as chaves candidatas da relação
+            $ fdtool keys --fds exemplos/e1.fds
+        normalforms ou n: verifica se está nas formas normais BCNF e 3FN
+            $ fdtool normalforms --fds exemplos/e1.fds
+
+Diretórios:
+    Os exemplos estão no diretório exemplos/ e estão numerados de e1.fds a e9.fds
+    Para organização os arquivos .h estão no diretório Headers/
+
+Bibiotecas:
+    Foram criadas 3 bibliotecas:
+        leArquivo: Abre e lê o arquivo passado e trata os dados para serem usados
+        listaDeBusca: Utilizada nas chaves candidatas, implementa uma lista FIFO, com funções básicas para inserção, remoção e verificação, 
+            contém uma struct lista para guardar e gerir os dados 
+        operacoes: Implementa as operações (fecho, cobertura mínima, chaves candidatas e verificação das forams normais) e uma função para guardar as dependências funcionais:
+            devolveDependencia: Recebe uma string com as dependencias lidas do arquivo e as salva nas structs criadas e devolveDependencias
+                struct listaDependencias: Guarda a quantidade de dependências e um array de struct Dependencia
+                struct Dependencia: Guarda o lado esquerdo e direito da dependência funcional
+            calculaFecho: Recebe uma listaDependencias e um atributo X, calcula o seu fecho e devolve como uma string 
+            calcularCoberturaMinima: Recebe as Dependencias e a quantidade, passa por todas as etapas e imprime a cobertura mínima
+            buscaLargura: Recebe a listaDependencias e uma string com os atributos, calcula as chaves candadatas usando a BFS e devolve na foram de struct chaves
+                struct chaves: Guarda a quantidade de chaves candidatas e um vetor de strings com as chaves
+            formasNormais: Recebe uma listaDependencias  e uma string com os atributos, verifica e imprime quais formas normais a relação está, utiliza as seguintes funções:
+                jaEhprimo: Verifica se um atributo é primo, devolve 1 se for e 0 se não for
+                estaNasChaves: Verifica se o lado esquerdo está nas chaves, devolve 1 se estiver e 0 se não estiver
+                ehBCNF: Verifica se a relação está na BCNF, devolve o atributo que não é chave ou NULL se estiver na BCNF
+                eh3FN: Verifica se a relação está na 3FN, devolve o atributo que não é primo ou NULL se estiver na 3FN

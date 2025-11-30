@@ -383,20 +383,9 @@ void formasNormais(struct listaDependencias *l, char *atr) {
             }
     }
     //imprimir naoPrimos
-    int printou = 0;
     if(naoPrimos != NULL) {
-        for(int i = 0; i < l->qtd; i++){
-            for(int j = 0; l->DF[i].direita[j] != '\0'; j++){
-                if(l->DF[i].direita[j] == naoPrimos[0]){
-                    int index = (int)naoPrimos[1];
-                    printf("VIOLATION 3FN: %s -> %s (%c not prime, %s not superkey)\n", l->DF[i].esquerda, l->DF[i].direita, naoPrimos[0], l->DF[index].esquerda);
-                    printou = 1;
-                    break;
-                }
-            }
-            if(printou)
-                break;
-        }
+        int index = (int)naoPrimos[1];
+        printf("VIOLATION 3FN: %s -> %s (%c not prime, %s not superkey)\n", l->DF[index].esquerda, l->DF[index].direita, naoPrimos[0], l->DF[index].esquerda);
     }
 
     free(naoChaves);
