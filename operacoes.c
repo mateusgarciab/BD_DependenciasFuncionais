@@ -40,7 +40,6 @@ struct listaDependencias* devolveDependencia(char* dependencias) {
 char *calculaFecho(struct listaDependencias *lista, char *X){
     char *fecho = calloc(26, sizeof(char));
     int tamanhoFecho = 0;
-    
 
     int i = 0;
     while(X[i] != '\0'){
@@ -54,8 +53,6 @@ char *calculaFecho(struct listaDependencias *lista, char *X){
         mudou = 0;
         for(int j = 0; j < lista->qtd; j++){
             int podeAdicionar = 1;
-            //printf("%d ", tamanhoFecho);
-            //verifica se todos os atributos da esquerda estão no fecho
             for(int k = 0; lista->DF[j].esquerda[k] != '\0'; k++){
                 int encontrado = 0;
                 for(int l = 0; l < tamanhoFecho; l++){
@@ -82,14 +79,11 @@ char *calculaFecho(struct listaDependencias *lista, char *X){
                     }
                     if(!jaExiste){
                         fecho[tamanhoFecho] = lista->DF[j].direita[k];
-                        //printf("Adicionando %c ao fecho\n", lista->DF[j].direita[k]);
                         tamanhoFecho++;
                         mudou = 1;
                     }
                 }
             }
-            //printf("%d\n", tamanhoFecho);
-            //puts(fecho);
         }
     }while(mudou);
     fecho[tamanhoFecho] = '\0';
@@ -129,16 +123,14 @@ void calcularCoberturaMinima(struct Dependencia *DF, int qtd){
             }
             ladoEsquerdoTemp[k] = '\0';
 
-            //criar DF_temp = DF_unit sem a DF atual (para não se auto-referenciar)
-            int qtd_temp = qtd_unitario - 1;
-            struct Dependencia *DF_temp = malloc(sizeof(struct Dependencia) * qtd_temp);
+           int qtd_temp = qtd_unitario;
+           struct Dependencia *DF_temp = malloc(sizeof(struct Dependencia) * qtd_temp);
 
-            int index = 0;
-            for(int m = 0; m < qtd_unitario; m++){
-                if(m != i){
-                    DF_temp[index++] = DF_unitario[m];
-                }
-            }
+           // copiar TODAS as dependências
+           for (int m = 0; m < qtd_unitario; m++) {
+               DF_temp[m] = DF_unitario[m];
+           }
+
 
             //calcula o fecho do lado esquerdo temporário com DF_temp
             struct listaDependencias lista;
@@ -188,7 +180,6 @@ void calcularCoberturaMinima(struct Dependencia *DF, int qtd){
     int qtd_final = 0;
 
     for(int i = 0; i < qtd_unitario; i++){
-
         //criar DF_temp = DF_unit sem a DF[i]
         int qtd_temp = qtd_unitario - 1;
         struct Dependencia *DF_temp = malloc(sizeof(struct Dependencia) * qtd_temp);
@@ -235,7 +226,6 @@ void calcularCoberturaMinima(struct Dependencia *DF, int qtd){
 int temNasChaves(struct chaves *c, char *atr) {
     int indiceC;
     for (int i = 0; i < c->qtd; i++) {
-
         indiceC = 0;
 
        for (int j = 0; c->chave[i][j] != '\0'; j++) {
@@ -248,7 +238,6 @@ int temNasChaves(struct chaves *c, char *atr) {
 
        if (indiceC == (int)strlen(c->chave[i]))
             return 1;
-
     }
     return 0;
 }
@@ -257,28 +246,20 @@ struct chaves *buscaLargura(struct listaDependencias *lista, char* atr) {
     struct chaves *c = malloc(sizeof(struct chaves));
     c->chave = calloc(100, sizeof(char*));
     c->qtd = 0;
-    int chaveAchada = 0/* , tamChave = 0 */;
+    int chaveAchada = 0;
     char *aux = calloc(100, sizeof(char));
 
     struct lista *l = criaLista(atr);
     while (!listaVazia(l)) {
         char *item = devolveItemLista(l);
         chaveAchada = 0;
-        /* if (chaveAchada) {
-            if ((int)strlen(item) > tamChave) {
-                l->qnt = 0;
-                continue;
-            }
-        } */
         
         if (ehChave(lista, item, atr) && (!temNasChaves(c, item))) {
             c->chave[c->qtd] = malloc(sizeof(char) * (strlen(item) + 1));
             strcpy(c->chave[c->qtd], item);
             c->qtd++;
             chaveAchada = 1;
-            /* tamChave = strlen(item); */
         }
-
 
         if (!chaveAchada) {
             for (int i = 0; i < (int)strlen(atr); i++) {
@@ -420,8 +401,6 @@ void formasNormais(struct listaDependencias *l, char *atr) {
 
     free(naoChaves);
     free(naoPrimos);
-    
-
     free(primos);
     for (int i = 0; i < c->qtd; i++) {
         free(c->chave[i]);

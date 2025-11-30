@@ -1,3 +1,7 @@
+/*  Trabalho feito por: 
+ *  Mateus Garcia Baiak 20224378
+ *  Agnaldo dos Santos Prieto Junior GRR20221259
+ */ 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -140,15 +144,8 @@ int main() {
             break;
         }
 
-
-
-
-        
-
         printf("$ ");
         fgets(entrada, sizeof(entrada), stdin);
         entrada[strcspn(entrada, "\n")] = '\0';
     }
-    
-    
 }
