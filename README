@@ -47,3 +47,6 @@ Bibiotecas:
                 estaNasChaves: Verifica se o lado esquerdo está nas chaves, devolve 1 se estiver e 0 se não estiver
                 ehBCNF: Verifica se a relação está na BCNF, devolve o atributo que não é chave ou NULL se estiver na BCNF
                 eh3FN: Verifica se a relação está na 3FN, devolve o atributo que não é primo ou NULL se estiver na 3FN
+ 
+
+.
